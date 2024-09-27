@@ -291,7 +291,6 @@ In SiLin, the new class is defined.
 
 + ProtectionLevelEnum
   
-+ ParameterEnum
 
 -----------------------------
 
@@ -328,14 +327,6 @@ PropertyModifier, MethodModifier <-- MemberModifier
 
 Modifier,Static,Final <-- ClassModifier
 
-Any <-- Instance
-
-Instance <-- VariableInstance
-
-Instance <-- FunctionInstance
-
-Instance <-- ClassInstance
-
 ProtectionLevel <-- Property
 
 ProtectionLevel <-- Method
@@ -346,6 +337,15 @@ Identifier <-- Function <-- Method
 
 Method,Property <-- Class
 
+Any <-- Instance
+
+Instance <-- VariableInstance
+
+Instance <-- FunctionInstance
+
+Instance <-- ClassInstance
+
+Function ,Method, Class <-- Signature
 ```
 
 > [!NOTE]
@@ -918,10 +918,20 @@ Property.getModifiers() = this.modifiers
 + class
 
 + class returns `Class` instance that indicates the class of the `ClassInstance` instance.
- 
+
+#### `Signature`
+   
 #### extension of some type
 
-1. For `Float` and `Double` type,
+1. For `Any` type,
+
+it will have new properties.
+
++ signature
+
++ signature will return the `Siganture` instance that indicates the signature of the instance.
+
+2. For `Float` and `Double` type,
 
 it will have new methods.
 
@@ -951,7 +961,7 @@ Double.isSafeInteger(): Boolean {
 }
 ```
 
-- For `CharSequence` type
+3. For `CharSequence` type
 
 it has new methods.
 
@@ -1045,6 +1055,7 @@ In a statement, iff the type of identifier does NOT be determined after `by` key
 (or sometimes omitting if the assigment operator `=` exists).
 
 However, under this case, if the state of identifier is not determined or the state of identifier can not be determined only from the part before the `by` keyword or assignment operator (a good example in example 2), one must be define the state of identifier through modifier 
+
 #### Examples
 ##### Example 1
 
@@ -1081,4 +1092,3 @@ One can rewrite it as
 ```
 Lazy String val myLazyString by lazy { "Hello" }
 ```
-
