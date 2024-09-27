@@ -144,28 +144,590 @@ See above example.
 
 In SiLin, the new class is defined.
 
-+ Signature
+- class
+
++ Type
++ ProtectionLevel
++ Static
++ Final
++ Annotation
 + Idenifier
-+ Class
-+ Method
++ Variable
 + Property
 + Function
-+ Variable
-+ Type
++ Method
++ Class
++ Parameter
++ Signature
+
+- enum
+
++ CaseEnum
+
++ ProtectionLevelEnum
+  
++ ParameterEnum
+
+-----------------------------
 
 The hierarchy of type are shown as follows.
 
 ```
-Any <-- Identifier
+Any <-- Type
 
-Identifier <-- Function <-- Method <-- Class 
+Type <-- Identifier
 
-Identifier <-- Variable <-- Property <-- Class
+Any <-- ProtectionLevel
+
+Any <-- Static
+
+Any <-- Final
+
+Any <-- Annotation
+
+Any <-- Returned
+
+Any <-- Body
+
+Any <-- Modifier
+
+Modifier <-- VariableModifier
+
+VariableModifier,Static,Final <-- PropertyModifier
+
+Modifier <-- FunctionModifier
+
+FunctionModifier,Static,Final <-- MethodModifier
+
+PropertyModifier, MethodModifier <-- MemberModifier
+
+Modifier,Static,Final <-- ClassModifier
+
+Any <-- Instance
+
+Instance <-- VariableInstance
+
+Instance <-- FunctionInstance
+
+Instance <-- ClassInstance
+
+ProtectionLevel <-- Property
+
+ProtectionLevel <-- Method
+
+Identifier <-- Variable <-- Property
+
+Identifier <-- Function <-- Method
+
+Method,Property <-- Class
+
 ```
 
-`Any <-- Identifier` means `Idenfier` inherits `Any` Class
+> [!NOTE]
+> `<--` means inherited
+> 
+> For example, `Any <-- Identifier` means `Idenfier` inherits `Any` Class
+
+#### `CaseEnum`
+
+`CaseEnum` is an enum class that wraps all constants about case.
+
++ `CaseEnum.CAMELCASE`
+
++ `CaseEnum.BIGCAMELCASE`
+
++ `CaseEnum.UPPERCASE`
+
++ `CaseEnum.LOWERCASE`
+
++ `CaseEnum.CONSTANT_CASE`
+
++ `CaseEnum.MACRO_CASE`
+
+#### `ProtectionLevelEnum`
+
+`ProtectionLevelEnum` is an enum class that wraps all constants about protection level.
+
++ `ProtectionLevelEnum.PRIVATE`
+
++ `ProtectionLevelEnum.PUBLIC`
+
++ `ProtectionLevelEnum.PROTECTED`
+
+#### `Type`
+
+- methods
+
++ getName
++ isType
++ getTypeName
++ getParentName
++ getRootSignature
+
++ getName() returns the non-qualified name of the type.
+
+```
+Type.getName() = this:class.SimpleName
+```
+
++ getQualifiedName() returns the qualified name of the type.
+
+```
+Type.getQualifiedName() = this:class.qualifiedName
+```
+  
++ isType(other:Type) is another form of `is` keyword.
+
+```
+Type.isType(other:Type) : Boolean = this is other 
+```
+
++ getTypeName() will return a String that represents type of `this` value. For example: `2.getTypeName()` will return `Int`
+
+It is equivalent to
+
+```
+Type.getTypeName() : String = this::class.simpleName
+```
+
++ getParent() return its parent node. If it has no parent, it will return null.
+
++ getParentName() return the name of its parent node. If it has no parent, it will return null.
+
+```
+Type.getParent.getName()
+```
+  
++ getRootSignature() will return Signature Instance that is root node of `this` value. If it has no parent, it will return itself node. For example, if it refers an instance of Class Type, then .getRootSignature() will return the instance of Class Type.
+
+If it does NOT refer anything, it getRootSignature() will return the instance of itself.
+  
+- properties
+
++ signature
+  
++ signature will return the Signature Instance that represents the signature of this.
+
+#### `ProtectionLevel`
+
+- methods
+
++ isPrivate
++ isPublic
++ isProtected
+
++ isPrivate() returns true iff it is private.
+
+```
+Property.isPrivate() : Boolean = this.protectionLevel == ProtectionLevelEnum.PRIVATE
+```
+
++ isPublic() returns true iff it is public.
+
+```
+Property.isPublic() : Boolean = this.protectionLevel == ProtectionLevelEnum.PUBLIC
+```
+
++ isProtected() returns true iff it is protected.
+
+```
+Property.isProtected() : Boolean = this.protectionLevel == ProtectionLevelEnum.PROTECTED
+```
+
+- properties
+
++ protectionLevel
+
++ protectionLevel returns `ProtectionLevelEnum` instance indicates that its protection level (including `private`,`public`, `protected`).
+
+#### `Static`
+
+- methods
+
++ isStatic
++ isNotStatic
+
++ isStatic() returns true iff it is static.
+
+```
+Property.isStatic() : Boolean = this.static
+```
+
++ isNotStatic() returns true iff it is not static. It is opposite of `isStatic` method
+
+```
+Property.isNotStatic() : Boolean = !this.isStatic()
+```
+
+- properties
+
++ static
+
++ static returns it is static.
+
+#### `Final`
+
+- methods
+
++ isFinal
+
++ isFinal() returns true iff it is final.
+
+```
+Property.isFinal() : Boolean = this.final
+```
+
+- properties
+
++ final
+  
++ final returns it is final.
+
+#### `Annotation`
+
+- property
+
++ name
++ entries
++ keys
++ values
+
++ name returns name of `Annotation` instance.
+  
++ entries returns all entries formed in key-value pair of `Annotation` instance.
+  
++ keys returns all keys of `Annotation` instance.
+
+##### Examples
+###### Example 1
+
+Consider the following code snippets.
+
+```
+@Preview ( background = true )
+fun mainActivity(){
+  
+}
+```
+
+The function `mainActivity` has an annotation named `Preview`.
+
+The @Preview annotation has a key-value pair `background = true`. So 
+
+```
+val previewAnnotation = Function(mainActivity).getAnnotation("Preview")
+println(previewAnnotation.entries)
+println(previewAnnotation.keys)
+println(previewAnnotation.values)
+```
+
+should output
+
+```
+[background = true]
+[background]
+[true]
+```
+
++ values returns all values of `Annotation` instance.
+
+#### `Modifier`
+None
+
+#### `VariableModifier`
+
+- properties
+
++ val
++ var
+
++ val returns true iff the identifier is defined with `val` keyword.
++ var returns true iff the identifier is defined with `var` keyword.
+
+#### `FunctionModifier`
+None
+
+#### `PropertyModifier`
+
+- properties
+
++ protectionLevel
++ static
++ final
+
++ protectionLevel returns `ProtectionLevel` instance that indicates the protection level of property in class.
+  
++ static returns true iff it is static. Exactly said, the property is defined with `static` keyword, or property is in the object or in static class or in companion object of the class.
+  
++ final returns true iff it is final. Exactly said, the property is defined with `final` keyword.
+
+#### `MethodModifier`
+
+- properties
+
++ protectionLevel
++ static
++ final
+
++ protectionLevel returns `ProtectionLevel` instance that indicates the protection level of method in class.
+  
++ static returns true iff it is static. Exactly said, the method is defined with `static` keyword, or method is in the object or in static class or in companion object of the class.
+  
++ final returns true iff it is final. Exactly said, the method is defined with `final` keyword.
+  
+#### `ClassModifier`
+
+- properties
+
++ protectionLevel
++ static
++ final
++ class
++ object
++ data 
+
++ protectionLevel returns `ProtectionLevel` instance that indicates the protection level of the class.
+  
++ static returns true iff it is static. Exactly said, it is the class that is defined with `static` keyword, or it is an object.
+  
++ final returns true iff it is final. Exactly said, it is the class or object is NOT defined with `open` keyword or defined with `final` keyword.
+
++ class returns true iff it is a class. Exactly said, it is defined with `class` keyword.
++ object returns true iff it is a object. Exactly said, it is defined with `object` keyword.
++ data returns true iff it is a data class or a data object. Exactly said, it is defined with `data` keyword.
+
+#### `Returned`
+
+- property
+
++ returnedValue
++ returnedType
+
++ returnedValue returns the returned value from the last call of function or method.
+  
++ returnedType returns the `Type` instance that indicates the type of `returnedValue` property.
+
+#### `Body`
+
+- properties
+
++ statements
++ variables
+
++ statements returns the statements in the body.
+
++ variables returns the variable that is defined in this body. (i.e. Whose scope is in the body)
+
+#### `Idenifier`
+
+- methods
+
++ isCamelcased
++ isBigCamelcased
++ isUppercased
++ isLowercased
++ isConstantCased
+
++ isCamelcased() returns true iff the identifier consists of english letter and is small camel cased (such as `isNumeric`)
+
+```
+Idenifier.isCamelcased() = Idenifier.case == CaseEnum.CAMELCASE
+```
+
++ isBigCamelcased() returns true iff the identifier consists of english letter and is big camel cased (such as `IsNumeric`)
+
+```
+Idenifier.isBigCamelcased() = Idenifier.case == CaseEnum.BIGCAMELCASE
+```
+
++ isUppercased() returns true iff the identifier consists of english letter and is all uppercased. (such as `ISNUMERIC`)
+
+```
+Idenifier.isUppercased() = Idenifier.case == CaseEnum.UPPERCASE
+```
+
++ isLowercased() returns true iff the identifier consists of english letter and is all lowercased. (such as `isnumeric`)
+
+```
+Idenifier.isLowercased() = Idenifier.case == CaseEnum.LOWERCASE
+```
+
++ isConstantCased() returns true iff the identifier looks like a constant in enum class (i.e. only consists of english letter and underscore `_`, and is all uppercased, and it does NOT start and end with underscore.  (such as `MAGICAL_NUMBER`) )
+
+```
+Idenifier.isConstantCased() = Idenifier.case == CaseEnum.CONSTANT_CASE
+```
+
++ isMacroCased() returns true iff the identifier looks like a macro in enum class (i.e. only consists of english letter and underscore `_`, and is all uppercased (such as `__MAGICAL_NUMBER__` , `__IFDEFINED__` ) )
+
+```
+Idenifier.isMacroCased() = Idenifier.case == CaseEnum.MACRO_CASE
+```
+
+- properties
+
++ case
+
++ case returns the type of case, it may one of these values defined in `CaseEnum` enum class.
 
 #### `Variable`
+None 
+
+#### `Property` 
+
+- methods
+
++ getModifiers
+
++ getModifiers returns a list of `Modifier` instance that represents all modifiers.
+
+```
+Property.getModifiers() = this.modifiers
+```
+
+- properties
+
++ modifiers
+  
++ modifiers returns a list of `Modifier` instance that represents all modifiers.
+
+#### `Function`
+
+- methods
+
++ hasParameters
++ getNumberOfParameters
++ getParameters
++ getParametersName
++ getParametersType
++ getParameterName
++ getParameterType
++ getAnnotations
++ getAnnotationsName
++ getAnnotation
++ getAnnotationName
+
++ hasParameters returns true iff it has one or more parameters.
+  
+```
+Function.hasParameters() = this.getNumberOfParameters() > 0 
+```
+
++ getNumberOfParameters returns the number of parameters. 
+
+```
+Function.getNumberOfParameters() = this.numberOfParameters
+```
+
++ getParameters returns a list of `Parameter` class. All infos about parameters can be known through this method.
+
++ getParametersName returns a list of String that represents the name of all parameters.
+
+```
+Function.getParametersName() = this.getParameters.map{ parameter -> parameter.name }
+```
+
++ getParametersType returns a list of `Type` class that represents the type of all parameters.
+
+```
+Function.getParametersName() = this.getParameters.map{ parameter -> parameter.type }
+```
+
++ getParameter(index:Int) returns `Parameter` instance that indicates the parameter according to the given argument index. If it is out of bound, then it throws OutOfIndexException.
+  
++ getParameter(parameter:Parameter) returns  `Parameter` instance that indicates the parameter according to the given argument Parameter.That is, find the parameter argument parameter, then return the `Parameter` instance.  If the parameter argument is NOT in the function, then it throws NoSuchElementException.
+
++ getParameter(name:String) returns `Parameter` instance that indicates the parameter according to the given argument name. That is, find the parameter whose name equals to the argument name, then return the `Parameter` instance.  If the name argument is NOT in the function, then it throws NoSuchElementException.
+
++ getParameterName(index:Int) returns the name of parameter to the given argument index. If it is out of bound, then it throws OutOfIndexException.
+
++ getParameterName(parameter:Parameter) returns  String instance that indicates the name of parameter according to the given argument Parameter.That is, find the parameter whose name equals to the name of argument parameter, then return the String instance.  If the parameter argument is NOT in the function, then it throws NoSuchElementException.
+
++ getParameterName(name:String) returns  String instance that indicates the name of parameter according to the given argument Parameter. That is, find the parameter whose name equals to the argument name, then return the String instance.  If the parameter argument is NOT in the function, then it throws NoSuchElementException.
+
++ getParameterType(index:Int) returns `Type` instance that indicates the type of parameter to the given argument index. If it is out of bound, then it throws OutOfIndexException.
+
++ getParameterType(name:String) returns `Type` instance that indicates the type of parameter to the given argument name. That is, find the parameter whose name equals to the argument name, then return the `Type` instance. If the name argument is NOT in the function, then it throws NoSuchElementException.
+
++ getAnnotations() returns a list of `Annotation` instance.
+  
++ getAnnotationsName() returns a list of String instance that indicates the name of all `Annotations`.
+   
++ getAnnotation(index:Int) returns an `Annotation` instance according to the given argument index. If it is out of bound, then it throws OutOfIndexException.
+
++ getAnnotation(annotation:Annotation) returns `Annotation` instance according to the given argument Annotation.That is, find the annotation whose name equals to the name of argument annotation, then return the String instance. If the annotation argument is NOT in the function, then it throws NoSuchElementException.
+  
++ getAnnotation(name:String)  returns an `Annotation` instance according to the given argument name. That is, find the parameter whose name equals to the argument name, then return the String instance.  If the parameter argument is NOT in the function, then it throws NoSuchElementException.
+  
++ getAnnotationName(index Int) returns an name of the annotation according to the given argument index. If it is out of bound, then it throws OutOfIndexException.
+
++ getAnnotationName(annotation:Annotation) returns String instance that indicates the name of annotation according to the given argument Annotation.That is, find the annotation whose name equals to the name of argument annotation, then return the String instance.  If the annotation argument is NOT in the function, then it throws NoSuchElementException.
+  
++ getAnnotationName(name:String) returns an name of the annotation according to the given argument  name. That is, find the annotation whose name equals to the argument name, then return the String instance.  If the parameter argument is NOT in the function, then it throws NoSuchElementException.
+  
+- properties
+
++ numberOfParameters
++ parameters
++ returned
++ annotations
++ body
+
++ numberOfParameters returns the number of parameters.
+
++ parameters returns the list of `Parameter` instance.
+
++ returned returns `Returned` instance.
+
++ annotations returns the list of `Annotation` instance.
+
++ body returns the `Body` instance that indicates the body of function.
+
+#### `Method`
+
+- methods
+
++ getModifiers
+
++ getModifiers returns a list of `Modifier` instance that represents all modifiers.
+
+```
+Property.getModifiers() = this.modifiers
+```
+
+- properties
+
++ modifiers
+  
++ modifiers returns a list of `Modifier` instance that represents all modifiers.
+
+#### `Class`
+
+- properties
+
++ members
++ properties
++ methods
+
++ members returns a list of `Member`.
+  
++ properties returns a list of `Property`.
+  
++ methods returns a list of `Method`.
+
+#### `Instance`
+
+- property
+
++ name 
++ value
++ type
+
++ name returns the name of the Instance. 
++ value returns the value the Instance currently stored. 
++ type returns the type of the Instance.
+
+#### `VariableInstance`
 
 - methods
 
@@ -177,6 +739,7 @@ Identifier <-- Variable <-- Property <-- Class
 + hasInitialized
 + needToInitializedFirst
 + canBeLateInitialized
++ getVariableModifier
 
 + isNullable() will return true iff the variable is nullable (or exactly said, is `Nullable` type)
 
@@ -194,37 +757,43 @@ Identifier <-- Variable <-- Property <-- Class
   
 + canBeLateInitialized() will return true iff the variable can be late initialized (or exactly said, is declare with `lateinit` or it alias `LateInit`). It is opposite of `needToInitializedFirst` method.
 
-#### `Type`
++ getVariableModifier returns `VariableModifier` instance that indicate the modifier of the `VariableInstance` instance.
+  
+#### `FunctionInstance`
 
 - methods
 
-+ isType
-+ getTypeName
-+ getRootSignature
++ hasInvoked
++ hasNotInvoked
++ getFunctionModifier
 
-+ isType(other:Type) is another form of `is` keyword.
++ hasInvoked returns true iff it has been invoked.
+  
++ hasNotInvoked is the opposite of `hasInvoked` method
 
-```
-Type.isType(other:Type) : Boolean = this is other 
-```
-
-+ getTypeName() will return a String that represents type of `this` value. For example: `2.getTypeName()` will return `Int`
-
-It is equivalent to
-
-```
-Type.getTypeName() : String = this::class.simpleName
-```
-+ getRootSignature() will return Signature Instance that is root elem of `this` value. For example, if it refers an instance of Class Type, then .getRootSignature() will return the instance of Class Type.
-
-If it does NOT refer anything, it getRootSignature() will return the instance of itself.
++ getFunctionModifier returns `FunctionModifier` instance that indicate the modifier of the `FunctionInstance` instance.
   
 - properties
 
-+ signature
-  
-+ signature will return the Signature Instance that represents the signature of this.
++ invokedTimes
 
++ invokedTimes returns the times it is invoked.
+  
+#### `ClassInstance`
+
+- methods
+
++ getClassModifier
+
++ getClassModifier returns `ClassModifier` instance that indicate the modifier of the `ClassInstance` instance.
+
+
+- property
+
++ class
+
++ class returns `Class` instance that indicates the class of the `ClassInstance` instance.
+ 
 #### extension of some type
 
 1. For `Float` and `Double` type,
