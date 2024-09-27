@@ -40,13 +40,138 @@ private val list1 = listOf(2)
 has modifier `val` and `private`.
 
 ## refined
-1.
-2. 
+1. Exception to Result instance at high order function.
+2. Exception to Result instance at high order function and then cancel at exception.
 3. define some new keywords for existing state of identifier and type of identifier at present.
 4. default value for `Nullable` type.
 5. define new class, and extension of new methods or properties etc.
 6. modifier definition of an identifier
 7. by keyword omitting
+
+### Exception to Result instance at high order function
+
+The Result instance is always returned.
+
+When exception is thrown in a high order function, then Result is returned and NOT continue to execute the high order function.
+
+#### Symbol
+
+```
+.?
+```
+
+#### Examples
+##### Example 1
+
+```
+val list1 = listOf(2,3,4,5,6,7)
+val result1 : Result<Int> = list1.?forEach{
+  println(it)
+}
+
+println("-")
+println(result1.isFailure)
+```
+
+should output
+
+```
+2
+3
+4
+5
+6
+7
+-
+false
+```
+
+##### Example 2
+
+```
+val list1 = listOf(2,3,4,5,6,7)
+val result1 : Result<Int> = list1.?forEach{
+  println(it)
+  if(it == 4){
+    throw Exception("New Exception")
+  }
+}
+
+println("-")
+println(result1.isFailure)
+```
+
+should output
+
+```
+2
+3
+4
+-
+true
+```
+
+### Exception to Result instance at high order function and then cancel at exception
+
+The Result instance is always returned.
+
+When exception is thrown in a high order function, then Result is returned and NOT continue to execute of the high order function. The execution before
+
+exception throws will be cancelled.
+
+#### Symbol
+
+```
+.??
+```
+
+#### Examples
+##### Example 1
+
+```
+val list1 = listOf(2,3,4,5,6,7)
+val result1 : Result<Int> = list1.??forEach{
+  println(it)
+}
+
+println("-")
+println(result1.isFailure)
+```
+
+should output
+
+```
+2
+3
+4
+5
+6
+7
+-
+false
+```
+
+##### Example 2
+
+```
+val list1 = listOf(2,3,4,5,6,7)
+val result1 : Result<Int> = list1.??forEach{
+  println(it)
+  if(it == 4){
+    throw Exception("New Exception")
+  }
+}
+
+println("-")
+println(result1.isFailure)
+```
+
+should output
+
+```
+-
+true
+```
 
 ###  define some new keywords for existing state of identifier and type of identifier at present
 In SiLin, these are keyword but not in Kotlin 
