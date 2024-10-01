@@ -47,6 +47,7 @@ has modifier `val` and `private`.
 5. define new class, and extension of new methods or properties etc.
 6. modifier definition of an identifier
 7. by keyword omitting
+8. other way to represent a set of `rangeTo` operator `..`, `..<`, and `downTo`, and step keyword -- .rangeTo extension function.
 
 ### Exception to Result instance at high order function
 
@@ -1091,4 +1092,117 @@ One can rewrite it as
 
 ```
 Lazy String val myLazyString by lazy { "Hello" }
+```
+### other way to represent a set of `rangeTo` operator `..`, `..<`, and `downTo`, and step keyword -- .rangeTo extension function
+
+For a real number, there is a simple extension method to generate an arthimetic progression (a `Sequence` instance) -- `rangeTo`
+
+The rangeTo extension method accepts at most three arguments, sometimes accepts at least one argument.
+
+#### syntax
+The syntax as follows.
+
+```
+fun <T:RealNumber> T.rangeTo(endNumber:T,step:T = 1,inclusive:Boolean  = true)
+```
+
+#### Form
++ The common form is shown as follows.
+  
+```
+Int.rangeTo(endNumber:Int,step:Int,inclusive:Boolean  = true)
+```
+
+#### parameter
+The first parameter `endNumber` indicates the end number of the arthimetic progression. 
+
+The last element must less than or equal to `endNumber` when the interval is postive, and it must greater than or equal to `endNumber` when the interval is negative
+
+The second parameter `step` indicates the interval of the arthimetic progression.
+
+The third parameter `inclusive` indicates it is inclusive to endNumber. It is inclusive to endNumber iff it is true.
+
+#### Exception
+##### IllegalArgumentException
++ If its absolute value of `step` is less than or equal to epsilon number (Math.EPS), then it will throw an Exception -- IllegalArgumentException.
++ If `step` is positive and this is greater than `endNumber`, then it will throw an Exception -- IllegalArgumentException.
++ If `step` is negative and this is less than `endNumber`, then it will also throw an Exception -- IllegalArgumentException.
+
+#### equivalence
+Take the common form as example.
+  
+```
+Int.rangeTo(endNumber:Int,step:Int = 1, inclusive:Boolean  = true)
+```
+
+is equivalent to the followings in Kotlin in different cases. 
+
+Case 1:
+
+When this < `endNumber` and `step` > 0 and `inclusive` is true, 
+
+```
+this..endNumber step step
+```
+
+Case 2:
+
+When this < `endNumber` and `step` > 0 and `inclusive` is false, 
+
+```
+this..<endNumber step step
+```
+
+Case 3:
+
+When this > `endNumber` and `step` < 0 and `inclusive` is true, 
+
+```
+this downTo endNumber step step
+```
+
+#### code
+```
+fun <T> T.rangeTo(endNumber:T,step:T = 1 as T, inclusive :Boolean = true): Sequence{
+  if(Math.abs(step) <= Math.EPS){
+    throw IllegalArgumentException("Invalid argument, the interval must be not equal to zero.")
+  }
+
+  if(Math.abs(this - endNumber) <= Math.EPS){
+    return emptySequence<T>() 
+  }
+
+  if(this < endNumber && step < 0 ){
+    throw IllegalArgumentException("Invalid argument, the interval must greater than zero when this < endNumber. ")
+  }
+
+  if(this > endNumber && step > 0 ){
+    throw IllegalArgumentException("Invalid argument, the interval must less than zero when this > endNumber. ")
+  }
+
+  val list1 = mutableListOf<T>()
+  if(this < endNumber && inclusive == true){
+    var i : T = this
+    for(i = this; i <= endNumber ; i += step){
+      list1.add(i)
+    }
+  }else if(this < endNumber && inclusive != true){
+    var i : T = this
+    for(i = this; i < endNumber ; i += step){
+      list1.add(i)
+    }
+  }else if(this > endNumber && inclusive == true){
+    var i : T = this
+    for(i = this; i >= endNumber ; i -= step){
+      list1.add(i)
+    }
+  }else if(this > endNumber && inclusive != true){
+    var i : T = this
+    for(i = this; i > endNumber ; i -= step){
+      list1.add(i)
+    }
+  }
+
+  return list1.asSequence()
+}
 ```
